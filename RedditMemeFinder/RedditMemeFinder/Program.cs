@@ -14,10 +14,17 @@ namespace RedditMemeFinder
     {
         public const int nPages = 4;
         public static string[] posts = new string[nPages * 25];
+        public static Dictionary<string, int> wordTally;
         static void Main(string[] args)
         {
             DownloadAndParse();
-            ReplaceNonAlphaNumeric();   
+            ReplaceNonAlphaNumeric();
+            wordTally = new Dictionary<string, int>();
+            SplitAndTally();
+            WriteData();
+
+            Console.WriteLine("\nDone!");
+            Console.ReadLine();
 
         }//main
 
@@ -40,18 +47,11 @@ namespace RedditMemeFinder
             while (pageCount < nPages)
             {
                 //Download Reddit
-                StreamWriter output = null;
                 try
                 {
                     Console.WriteLine("Downloading reddit front page...");
                     redditHTML = client.DownloadString(reddit);
                     end = redditHTML.Length;
-
-                    Console.WriteLine("Writing to file...");
-                    //write to file for debugging
-                    output = new StreamWriter("reddit_" + pageCount + ".html");
-                    output.WriteLine(redditHTML);
-                    Console.WriteLine("Written");
                 }
                 catch (WebException e)
                 {
@@ -59,16 +59,7 @@ namespace RedditMemeFinder
                     pageCount = nPages;
                     continue;
                 }
-                catch (Exception fileE)
-                {
-                    Console.WriteLine("An error occurred probably while writing the file:\n" + fileE.Message);
-                    continue;
-                }
-                finally
-                {
-                    if (output != null)
-                        output.Close();
-                }
+                
 
                 //read the html file
                 //redditHTML = File.ReadAllText(htmlFileLoc + "page.html");
@@ -115,10 +106,6 @@ namespace RedditMemeFinder
             {
                 Console.WriteLine((i + 1) + ": " + posts[i]);
             }
-
-            Console.WriteLine("\nDone!");
-            Console.ReadLine();
-
         }//DownloadAndParse()
 
         public static void ReplaceNonAlphaNumeric()
@@ -136,6 +123,46 @@ namespace RedditMemeFinder
                 }
                 posts[i] = title;
             }
-        }//replace non alphanumeric
+        }//replace non alphanumeric()
+
+        public static void SplitAndTally()
+        {
+            string[] words;
+            foreach(string title in posts)
+            {
+                words = title.Split(' ');
+                foreach(string word in words)
+                {
+                    wordTally[word]++;
+                }
+            }
+        }//SplitAndTally()
+
+        public static void WriteData()
+        {
+
+            StreamWriter output = null;
+            try
+            {
+                Console.WriteLine("Writing to file...");
+                //write to file for debugging
+                output = new StreamWriter("values.csv");
+                foreach(string word in wordTally.Keys)
+                {
+                    output.WriteLine(word + "," + wordTally[word]);
+                }
+
+                Console.WriteLine("Written");
+            }
+            catch (Exception fileE)
+            {
+                Console.WriteLine("An error occurred probably while writing the file:\n" + fileE.Message);
+            }
+            finally
+            {
+                if (output != null)
+                    output.Close();
+            }
+        }//WriteData()
     }//class program
 }
