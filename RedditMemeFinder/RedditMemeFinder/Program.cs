@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Net;
 using System.IO;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace RedditMemeFinder
 {
@@ -110,18 +111,20 @@ namespace RedditMemeFinder
 
         public static void ReplaceNonAlphaNumeric()
         {
-            string title;
+            Regex rgx = new Regex("[^a-zA-Z0-9 - ]");
+            //string title;
             for(int i = 0; i < posts.Length; i++)
             {
-                title = posts[i];
-                for(int j = 0; j < title.Length; j++)
-                {
-                    if(title[j] != ' ' && (title[j] < 48 || (title[j] > 57 && title[j] < 65) || (title[j] > 90 && title[j] < 97) || title[j] > 122))
-                    {
-                        title.Replace(title[j], ' ');
-                    }
-                }
-                posts[i] = title;
+                //title = posts[i];
+                //for(int j = 0; j < title.Length; j++)
+                //{
+                //    if(title[j] != ' ' && (title[j] < 48 || (title[j] > 57 && title[j] < 65) || (title[j] > 90 && title[j] < 97) || title[j] > 122))
+                //    {
+                //        title.Replace(title[j], ' ');
+                //    }
+                //}
+                //posts[i] = title;
+                posts[i] = rgx.Replace(posts[i], " ");
             }
         }//replace non alphanumeric()
 
@@ -133,7 +136,10 @@ namespace RedditMemeFinder
                 words = title.Split(' ');
                 foreach(string word in words)
                 {
-                    wordTally[word]++;
+                    if (wordTally.ContainsKey(word))
+                        wordTally[word]++;
+                    else
+                        wordTally.Add(word, 1);
                 }
             }
         }//SplitAndTally()
