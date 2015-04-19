@@ -136,12 +136,13 @@ namespace RedditMemeFinder
                 words = title.Split(' ');
                 foreach(string word in words)
                 {
-                    if (wordTally.ContainsKey(word))
+                    if (wordTally.ContainsKey(word) && word != " ")
                         wordTally[word]++;
                     else
                         wordTally.Add(word, 1);
                 }
             }
+            
         }//SplitAndTally()
 
         public static void WriteData()
@@ -155,7 +156,8 @@ namespace RedditMemeFinder
                 output = new StreamWriter("values.csv");
                 foreach(string word in wordTally.Keys)
                 {
-                    output.WriteLine(word + "," + wordTally[word]);
+                    if(wordTally[word] > 2)
+                        output.WriteLine(word + "," + wordTally[word]);
                 }
 
                 Console.WriteLine("Written");
