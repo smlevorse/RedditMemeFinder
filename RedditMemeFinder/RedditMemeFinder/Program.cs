@@ -16,6 +16,14 @@ namespace RedditMemeFinder
         public static string[] posts = new string[nPages * 25];
         static void Main(string[] args)
         {
+            DownloadAndParse();
+            ReplaceNonAlphaNumeric();   
+
+        }//main
+
+        public static void DownloadAndParse()
+        {
+
             //set the page
             string reddit = "http://www.reddit.com/";
 
@@ -67,7 +75,7 @@ namespace RedditMemeFinder
                 Console.WriteLine("Reddit Downloaded.\nParsing page {0}...", (pageCount + 1));
 
                 //find the titles
-                while(postCount < 25 * (pageCount + 1))
+                while (postCount < 25 * (pageCount + 1))
                 {
                     //find the index of the post in the html file
                     index = redditHTML.IndexOf("<span class=\"rank\">" + (postCount + 1));
@@ -76,9 +84,9 @@ namespace RedditMemeFinder
                     index = redditHTML.IndexOf("<a class=\"title", index);
                     index = redditHTML.IndexOf(">", index) + 1;
                     end = redditHTML.IndexOf("<", index);
-                    title  = redditHTML.Substring(index, end - index);
+                    title = redditHTML.Substring(index, end - index);
                     posts[postCount] = title;
-                    Console.WriteLine("\tFound title {0}: {1}", (++postCount + pageCount * 25), title );
+                    Console.WriteLine("\tFound title {0}: {1}", (++postCount + pageCount * 25), title);
 
                 }
 
@@ -103,7 +111,7 @@ namespace RedditMemeFinder
             Console.ForegroundColor = ConsoleColor.Gray;
 
             //Test this code by printing out all of the titles
-            for(int i = 0; i < posts.Length; i++)
+            for (int i = 0; i < posts.Length; i++)
             {
                 Console.WriteLine((i + 1) + ": " + posts[i]);
             }
@@ -111,6 +119,23 @@ namespace RedditMemeFinder
             Console.WriteLine("\nDone!");
             Console.ReadLine();
 
-        }
-    }
+        }//DownloadAndParse()
+
+        public static void ReplaceNonAlphaNumeric()
+        {
+            string title;
+            for(int i = 0; i < posts.Length; i++)
+            {
+                title = posts[i];
+                for(int j = 0; j < title.Length; j++)
+                {
+                    if(title[j] != ' ' && (title[j] < 48 || (title[j] > 57 && title[j] < 65) || (title[j] > 90 && title[j] < 97) || title[j] > 122))
+                    {
+                        title.Replace(title[j], ' ');
+                    }
+                }
+                posts[i] = title;
+            }
+        }//replace non alphanumeric
+    }//class program
 }
