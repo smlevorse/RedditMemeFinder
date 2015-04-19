@@ -25,7 +25,6 @@ namespace RedditMemeFinder
             WriteData();
 
             Console.WriteLine("\nDone!");
-            Console.ReadLine();
 
         }//main
 
